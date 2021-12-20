@@ -1,0 +1,38 @@
+body, html {
+    padding: 0;
+    margin: 0;
+    overflow-x: hidden;
+    height: 100%;
+}
+
+html {
+    background-image: url("../images/JT-201020.jpg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+}
+
+body {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+#overlay {
+    padding: 3%;
+}
+
+div.w-75 {
+    background-color: white;
+    border-radius: 15px;
+}
+
+textarea#lexeme {
+    background-color: rgb(24, 24, 24);
+    color: whitesmoke;
+}
+
+@media (max-width: 575.98px) {
+    div.w-75 {
+        width: 95% !important;
+    }
+}
