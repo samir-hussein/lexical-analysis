@@ -12,10 +12,17 @@ const keywords = [
     'do',
     'switch',
     'case',
+    'default',
+    'break',
+    'continue',
     'return',
     'function',
     'class',
     'printf',
+    'cout',
+    'cin',
+    'let',
+    'var',
 ];
 
 const operators = [
@@ -23,6 +30,8 @@ const operators = [
     ')',
     '{',
     '}',
+    '[',
+    ']',
     '+',
     '-',
     '*',
@@ -42,6 +51,8 @@ const operators = [
     '<=',
     '!=',
     '<>',
+    '>>',
+    '<<',
     '+=',
     '-=',
     '*=',
@@ -50,17 +61,25 @@ const operators = [
     '--',
 ];
 
-function lexer(str) {
-    str = str.trim();
-    let arr = [''];
-    let tmp = [];
-    str = str.split('\n');
-
+function removeComments(str) {
     for (i = 0; i < str.length; i++) {
         if (str[i].includes("//")) {
             str[i] = str[i].split("//")[0];
         }
     }
+}
+
+function lexer(str) {
+    // remove white spaces from start & end of whole code
+    str = str.trim();
+    // split whole code into separate lines
+    str = str.split('\n');
+
+    let arr = [''];
+    let tmp = [];
+
+    // remove comments from whole code
+    removeComments(str);
 
     for (j = 0; j < str.length; j++) {
         tmp = str[j].split("");
@@ -96,13 +115,17 @@ function lexer(str) {
             }
         }
     }
+
+    if (arr[arr.length - 1] == "") {
+        arr.pop();
+    }
+
     return arr;
 }
 
 function tokens(lexeme) {
     let tokens = [];
-    let flag = false;
-    let error;
+    let temp = [];
 
     lexeme = lexer(lexeme);
 
@@ -111,32 +134,28 @@ function tokens(lexeme) {
     }
 
     for (i = 0; i < lexeme.length; i++) {
-
-        let temp = [];
-
         if (keywords.includes(lexeme[i])) {
             temp['Keyword'] = lexeme[i];
-            tokens.push(temp);
-        } else if (operators.includes(lexeme[i])) {
-            temp['Operator'] = lexeme[i];
-            tokens.push(temp);
-        } else if (/(^(?![0-9_])[\w]+$)/gm.test(lexeme[i])) {
-            temp['Identifier'] = lexeme[i];
-            tokens.push(temp);
-        } else if (/^[0-9]+$/.test(lexeme[i]) || /^(["][^"]+["])|(['][^']+['])$/g.test(lexeme[i])) {
-            temp['Constant'] = lexeme[i];
-            tokens.push(temp);
-        } else if (lexeme[i] == "" || lexeme[i] == " ") {
-            continue;
-        } else {
-            flag = true;
-            error = lexeme[i];
         }
-    }
 
+        else if (operators.includes(lexeme[i])) {
+            temp['Operator'] = lexeme[i];
+        }
 
-    if (flag) {
-        return "There is error in : " + error;
+        else if (/(^(?![0-9_])[\w]+$)/gm.test(lexeme[i])) {
+            temp['Identifier'] = lexeme[i];
+        }
+
+        else if (/^[0-9]+$/.test(lexeme[i]) || /^(["][^"]+["])|(['][^']+['])$/g.test(lexeme[i])) {
+            temp['Constant'] = lexeme[i];
+        }
+
+        else {
+            return "There is error in : " + lexeme[i];
+        }
+
+        tokens.push(temp);
+        temp = [];
     }
 
     return tokens;
@@ -149,17 +168,17 @@ $("#try").click(function () {
     $("#table").html("");
 
     if (arr.includes("error")) {
-        $("#alert").removeClass("d-none");
-        $("#alert").addClass("d-block");
+        $("#error").removeClass("d-none");
+        $("#error").addClass("d-block");
         $("#tokens_number").removeClass("d-block");
         $("#tokens_number").addClass("d-none");
-        $("#alert").text(arr);
+        $("#error").text(arr);
     } else {
         $("#tokens_number").text("Number of Tokens : " + arr.length);
         $("#tokens_number").removeClass("d-none");
         $("#tokens_number").addClass("d-block");
-        $("#alert").removeClass("d-block");
-        $("#alert").addClass("d-none");
+        $("#error").removeClass("d-block");
+        $("#error").addClass("d-none");
         for (i = 0; i < arr.length; i++) {
             for (var key in arr[i]) {
                 $("#table").append(`<tr>
@@ -171,3 +190,10 @@ $("#try").click(function () {
     }
 
 });
+
+const textarea = document.querySelector("#lexeme");
+textarea.addEventListener("keyup", e => {
+    textarea.style.height = "150px";
+    let sclHeight = e.target.scrollHeight;
+    textarea.style.height = `${sclHeight}px`;
+})

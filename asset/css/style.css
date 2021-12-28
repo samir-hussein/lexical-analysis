@@ -29,6 +29,12 @@ div.w-75 {
 textarea#lexeme {
     background-color: rgb(24, 24, 24);
     color: whitesmoke;
+    resize: none;
+    height: 150px;
+}
+
+textarea#lexeme::-webkit-scrollbar {
+    width: 0;
 }
 
 @media (max-width: 575.98px) {
